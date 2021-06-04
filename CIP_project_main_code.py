@@ -321,7 +321,7 @@ def get_url_link(route_url, all_cities_coord_dict, lat_lon_list):
 """
 Function get_image_url_link(imagery_url, all_cities_coord_dict, cities_in_route) takes as arguments the beginning of the
 Bing Maps imagery link (imagery_url), dictionary {city: {'lat': latitude, 'lon': longitude},...}, and list of cities 
-in optimized order (cities_in_route). This function return the url link used to get the map in the png format with the
+in optimized order (cities_in_route). This function returns the url link used to get the map in the png format with the
 optimized route on.
 """
 def get_image_url_link(imagery_url, all_cities_coord_dict, cities_in_route):

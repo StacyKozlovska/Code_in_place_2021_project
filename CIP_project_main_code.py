@@ -72,6 +72,7 @@ def get_input_countries():
     start_country = input("Starting point(country): ")
     start_city = input("Starting point(city): ")
 
+    # if the start country is the USA, we ask for the state of the start city above
     if start_country == "USA" or start_country == "United States" or start_country == "United States of America":
         start_country = "USA"
         start_state = input("Starting point(state): ")
@@ -87,6 +88,8 @@ def get_input_countries():
         if country == '':
             break
 
+        # handles the difference in names of one country - USA, United States or
+        # United States of America - to make the name uniform throughout the code 
         if country == "USA" or country == "United States" or country == "United States of America":
             country = "USA"
             states = input("Destination state: ")
@@ -146,8 +149,8 @@ def get_country_continents_as_dict(country_list, continents):
 
 """
 Function gets and transforms(changes names of columns) csv files of every input country. ALso it handles USA and 
-Czech Republic (user can write the name differently) to get right csv files. After this function we can work with needed
-csv files without changing something.
+Czech Republic (user can write the name differently) to get right csv files. After running this function we can work 
+with needed csv files without changing something.
 """
 def get_csv_files(start_country, country_list):
     df_start = pd.read_csv("countries/" + start_country + ".csv")
@@ -225,6 +228,8 @@ def get_lon_lat(input_values, city_coordinate_dict):
     for country in country_city:
         new_city = country_city[country]
         
+        # handles the difference in names of one country -
+        # (Czech Republic and Czechia) - it helps to access the right csv file 
         if country == "Czech Republic":
             country = "Czechia"
             directory_city_dict["countries/" + country + ".csv"] = new_city

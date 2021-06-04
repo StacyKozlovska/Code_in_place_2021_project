@@ -126,13 +126,15 @@ def get_country_continents_as_dict(country_list, continents):
             d_country = 'USA'
         d_continents[d_country] = continent
 
-    web_continents = {'Europe': 'europe', 
-                      'Asia': 'asia', 
-                      'North America': 'north-america', 
-                      'South America': 'south-america', 
-                      'Africa': 'africa', 
-                      'Oceania': 'oceania-australia', 
-                      'Australia': 'oceania-australia'}
+    web_continents = {
+          'Europe': 'europe', 
+          'Asia': 'asia', 
+          'North America': 'north-america', 
+          'South America': 'south-america', 
+          'Africa': 'africa', 
+          'Oceania': 'oceania-australia', 
+          'Australia': 'oceania-australia'
+    }
     new_country_continent = {}
     ready_web_end = {}
 

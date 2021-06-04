@@ -1,7 +1,6 @@
 """
 Importing libraries
 """
-
 import pandas as pd
 import json
 import six
@@ -24,7 +23,6 @@ BING_MAPS_KEY = ''  # your own Bing Maps API key created on https://www.bingmaps
 Main function: get input countries and cities, calculate and visualize the shortest route to visit all destinations, 
 give links to webpages with Covid-19 travel restrictions.
 """
-
 def main():
     continents = pd.read_csv("countries/countries-continents.csv")     # path to the country-continent csv file
 
@@ -50,7 +48,6 @@ def main():
 """
 Function to greet the user, returns user's name
 """
-
 def greeting():
     print("Hello! Here you can calculate the optimal route (for traveling by car) to visit several destination points around the world.")
     print("Also, you can get the link to the webpage with Covid-19 travel restrictions.")
@@ -59,6 +56,7 @@ def greeting():
     print("Let's begin!")
     print("P.S. Mind spelling and capital letters;)")
     return name
+
 
 """
 Function get_input_countries() gets countries and cities from the user, returns: 
@@ -77,14 +75,13 @@ def get_input_countries():
     if start_country == "USA" or start_country == "United States" or start_country == "United States of America":
         start_country = "USA"
         start_state = input("Starting point(state): ")
-
-
     else:
         start_state = ''
+    
     country_list = []
     country_city = {}
-
     states_dict = {}
+    
     while True:
         country = input("Destination country (press enter to quit input mode): ")
         if country == '':
@@ -96,7 +93,6 @@ def get_input_countries():
             city = input("Destination city: ")
             states_dict[city] = states
             country_city[country] = city
-
         else:
             city = input("Destination city: ")
             if country not in country_city:
@@ -104,9 +100,7 @@ def get_input_countries():
             else:
                 country_city[country].append(city)
 
-
         country_list.append(country)
-
 
     return country_list, country_city, states_dict, start_country, start_city, start_state
 
@@ -117,22 +111,25 @@ d_continents - dictionary {country: continent}
 new_country_continent - dictionary {lowercase country: lowercase continent} 
 ready_web_end - dictionary {country: 'lowercase_continent/lowercase_country'} - values are ready for a web link
 """
-
 def get_country_continents_as_dict(country_list, continents):
     d_continents = {}
-
     for d_country in country_list:
         if d_country == 'USA':
             d_country = 'US'
 
         continent = continents.loc[(continents['Country'] == d_country), 'Continent'].iloc[0]
 
-
         if d_country == 'US':
             d_country = 'USA'
         d_continents[d_country] = continent
 
-    web_continents = {'Europe': 'europe', 'Asia': 'asia', 'North America': 'north-america', 'South America': 'south-america', 'Africa': 'africa', 'Oceania': 'oceania-australia', 'Australia': 'oceania-australia'}
+    web_continents = {'Europe': 'europe', 
+                      'Asia': 'asia', 
+                      'North America': 'north-america', 
+                      'South America': 'south-america', 
+                      'Africa': 'africa', 
+                      'Oceania': 'oceania-australia', 
+                      'Australia': 'oceania-australia'}
     new_country_continent = {}
     ready_web_end = {}
 
@@ -142,7 +139,6 @@ def get_country_continents_as_dict(country_list, continents):
         new_country = country.lower()
         new_country = new_country.replace(' ', '-')
         new_country_continent[new_country] = new_cont
-
         ready_web_end[country] = new_cont + "/" + new_country
 
     return d_continents, new_country_continent, ready_web_end
@@ -153,27 +149,27 @@ Function gets and transforms(changes names of columns) csv files of every input 
 Czech Republic (user can write the name differently) to get right csv files. After this function we can work with needed
 csv files without changing something.
 """
-
 def get_csv_files(start_country, country_list):
     df_start = pd.read_csv("countries/" + start_country + ".csv")
-    df_start.rename(columns={"City": "city", "Latitude": "lat", "Longitude": "lon", "Population": "popul"}, inplace=True)
+    df_start.rename(columns={"City": "city", "Latitude": "lat", "Longitude": "lon", 
+                             "Population": "popul"}, inplace=True)
     df_start["country"] = start_country
     df_start.to_csv("countries/" + start_country + ".csv", index=False)
 
     for country in country_list:
-        if country == "Czech Republic":
+        if country == "Czech Republic":  # handles the difference in names of one country -
+                                         # Czech Republic and Czechia - to access the right csv file
             df = pd.read_csv("countries/Czechia.csv")
-            df.rename(columns={"City": "city", "Latitude": "lat", "Longitude": "lon", "Population": "popul",\
-                               "State": "state"}, inplace=True)
+            df.rename(columns={"City": "city", "Latitude": "lat", "Longitude": "lon", 
+                               "Population": "popul", "State": "state"}, inplace=True)
             df["country"] = "Czechia"
             df.to_csv("countries/Czechia.csv", index=False)
         else:
             df = pd.read_csv("countries/" + country + ".csv")
-            df.rename(columns={"City":"city", "Latitude": "lat", "Longitude": "lon", "Population": "popul",\
-                               "State":"state"}, inplace=True)
+            df.rename(columns={"City":"city", "Latitude": "lat", "Longitude": "lon", 
+                               "Population": "popul", "State":"state"}, inplace=True)
             df["country"] = country
             df.to_csv("countries/" + country + ".csv", index=False)
-
 
 
 """
@@ -183,14 +179,11 @@ start_city_lon - start city longitude as a float
 start_city_lat - start city latitude as a float
 city_coordinates_dict - dictionary {'city': {'lon': longitude, 'lat': latitude}}
 """
-
 def get_start_lon_lat(input_values):
     start_country = input_values[3]
     start_city = input_values[4]
     start_state = input_values[5]
-
     city_coordinates_dict = {}
-
 
     if start_country == 'USA':
         city_lon_lat_dict = {}
@@ -201,7 +194,6 @@ def get_start_lon_lat(input_values):
         city_lon_lat_dict['lon'] = start_city_lon
         city_lon_lat_dict['lat'] = start_city_lat
         city_coordinates_dict[start_city] = city_lon_lat_dict
-
     else:
         city_lon_lat_dict = {}
         df_start = pd.read_csv("countries/" + start_country + ".csv")
@@ -222,19 +214,17 @@ cities_lon - dictionary {city: longitude,...} for every input city
 cities_lat - dictionary {city: latitude,...} for every input city
 all_cities_coord_dict - dictionary of coordinates of all cities {city: {'lon': longitude, 'lat': latitude},...}
 """
-
 def get_lon_lat(input_values, city_coordinate_dict):
     country_city = input_values[1]
     states_dict = input_values[2]
     all_cities_coord_dict = city_coordinate_dict
-
     cities_lon = {}
     cities_lat = {}
-
     directory_city_dict = {}
 
     for country in country_city:
         new_city = country_city[country]
+        
         if country == "Czech Republic":
             country = "Czechia"
             directory_city_dict["countries/" + country + ".csv"] = new_city
@@ -247,21 +237,19 @@ def get_lon_lat(input_values, city_coordinate_dict):
     for directory in directory_city_dict.keys():
         df = pd.read_csv(directory)
         city = directory_city_dict[directory]
+        
         if directory == "countries/USA.csv":
             for us_city in city.keys():
                 us_state = city[us_city]
                 loc_dict = {}
-
                 city_lon = df.loc[(df['state'] == us_state) & (df['city'] == us_city), 'lon'].iloc[0]
                 city_lat = df.loc[(df['state'] == us_state) & (df['city'] == us_city), 'lat'].iloc[0]
                 cities_lon[us_city] = city_lon
                 cities_lat[us_city] = city_lat
                 loc_dict['lon'] = city_lon
                 loc_dict['lat'] = city_lat
-
-
         else:
-            loc_dict = {}
+            loc_dict = {}           
             for i in range(1, len(city)+1):
                 i -= 1
                 get_city = city[i]
@@ -282,12 +270,6 @@ def get_lon_lat(input_values, city_coordinate_dict):
     for coordinates in all_cities_coord_dict.values():
         lat_lon_list.append(coordinates)
 
-
-
-    # print("final cities_lon", cities_lon)
-    # print("final cities_lat", cities_lat)
-    # print ("all cities coord dict:", all_cities_coord_dict)
-
     return cities_lon, cities_lat, all_cities_coord_dict, lat_lon_list
 
 
@@ -299,39 +281,36 @@ test_routeUrl - complete string for getting optimized route
 imagery_url - complete string for getting png map
 wp_city_dict - dictionary {waypoint+number : city,...}, used to print out the route for the user to read
 """
-
-
-def get_url_link(test_routeUrl, all_cities_coord_dict, lat_lon_list):
+def get_url_link(route_url, all_cities_coord_dict, lat_lon_list):
     wp_city_dict = {}
     count = 0
     for i in range(len(lat_lon_list)):
         if count == 0:
-            test_routeUrl += "wp."
+            route_url += "wp."
         else:
-            test_routeUrl += "&wp."
+            route_url += "&wp."
 
-
-        test_routeUrl += str(count)
-        test_routeUrl += "="
-        test_routeUrl += str(lat_lon_list[count]['lat'])
-        test_routeUrl += ","
-        test_routeUrl += str(lat_lon_list[count]['lon'])
+        route_url += str(count)
+        route_url += "="
+        route_url += str(lat_lon_list[count]['lat'])
+        route_url += ","
+        route_url += str(lat_lon_list[count]['lon'])
         city_name = list(all_cities_coord_dict.keys())[count]
         wp_name = "wp." + str(count)
         wp_city_dict[wp_name] = city_name
         count += 1
 
-    test_routeUrl += "&wp."
-    test_routeUrl += str(count)
-    test_routeUrl += "="
-    test_routeUrl += str(lat_lon_list[0]['lat'])
-    test_routeUrl += ","
-    test_routeUrl += str(lat_lon_list[0]['lon'])
-    test_routeUrl += "&optwp=true&optimize=timeWithTraffic"
-    test_routeUrl += "&key="
-    test_routeUrl += BING_MAPS_KEY
+    route_url += "&wp."
+    route_url += str(count)
+    route_url += "="
+    route_url += str(lat_lon_list[0]['lat'])
+    route_url += ","
+    route_url += str(lat_lon_list[0]['lon'])
+    route_url += "&optwp=true&optimize=timeWithTraffic"
+    route_url += "&key="
+    route_url += BING_MAPS_KEY
 
-    return test_routeUrl, wp_city_dict
+    return route_url, wp_city_dict
 
 
 """
@@ -340,10 +319,9 @@ Bing Maps imagery link (imagery_url), dictionary {city: {'lat': latitude, 'lon':
 in optimized order (cities_in_route). This function return the url link used to get the map in the png format with the
 optimized route on.
 """
-
-
 def get_image_url_link(imagery_url, all_cities_coord_dict, cities_in_route):
     new_lat_lon_list = []
+    
     for city in cities_in_route:
         coord = all_cities_coord_dict[city]
         city_lat = coord['lat']
@@ -387,24 +365,20 @@ def get_image_url_link(imagery_url, all_cities_coord_dict, cities_in_route):
 Function get_best_route(all_cities_coord_dict) takes in the dictionary {city: {'lon':longitude, 'lat':latitude},...} 
 as an argument and returns the optimized route and the map with that route on
 """
-
 def get_best_route(all_cities_coord_dict, lat_lon_list):
-
     routeUrl_start = "http://dev.virtualearth.net/REST/V1/Routes/Driving?"
     imagery_url = "https://dev.virtualearth.net/REST/v1/Imagery/Map/Road/Routes?"
 
     routeUrl, wp_city_dict = get_url_link(routeUrl_start, all_cities_coord_dict, lat_lon_list)
 
-
     request = urllib.request.Request(routeUrl)
     response = urllib.request.urlopen(request)
-
     r = response.read().decode(encoding="utf-8")
     result = json.loads(r)
-
+    
     optimized_route = result["resourceSets"][0]["resources"][0]["waypointsOrder"]
-    # print(optimized_route)
     print("Your optimized route is:")
+    
     count_print = 1
     new_optimized_route = optimized_route[:-1]
     cities_in_route = []
@@ -439,4 +413,6 @@ def print_travel_bans_link(ready_web_end, name):
         print(travel_link)
     print (f"Have a nice trip, {name}!")
 
-main()
+
+if __name__ ==  "__main__":
+    main()

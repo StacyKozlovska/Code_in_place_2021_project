@@ -174,8 +174,7 @@ def get_csv_files(start_country, country_list):
                      "State": "state"
                 } 
                 , inplace=True
-            )
-            
+            )        
             df["country"] = "Czechia"
             df.to_csv("countries/Czechia.csv", index=False)
         else:
@@ -189,8 +188,7 @@ def get_csv_files(start_country, country_list):
                      "State":"state"
                  }
                  , inplace=True
-            )
-            
+            )            
             df["country"] = country
             df.to_csv("countries/" + country + ".csv", index=False)
 

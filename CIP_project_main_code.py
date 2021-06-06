@@ -211,8 +211,7 @@ def get_start_lon_lat(input_values):
         df_start = (
             pd.read_csv("countries/" + start_country + ".csv")
             [lambda x: x['state'] == str(start_state)]
-        )
-        
+        )        
         start_city_loc = df_start[df_start['city'] == str(start_city)].index.values
         start_city_lon = df_start.loc[start_city_loc, 'lon'].iloc[0]
         start_city_lat = df_start.loc[start_city_loc, 'lat'].iloc[0]

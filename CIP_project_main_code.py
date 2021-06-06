@@ -165,14 +165,32 @@ def get_csv_files(start_country, country_list):
         if country == "Czech Republic":  # handles the difference in names of one country -
                                          # Czech Republic and Czechia - to access the right csv file
             df = pd.read_csv("countries/Czechia.csv")
-            df.rename(columns={"City": "city", "Latitude": "lat", "Longitude": "lon", 
-                               "Population": "popul", "State": "state"}, inplace=True)
+            df.rename(
+                columns={
+                     "City": "city", 
+                     "Latitude": "lat", 
+                     "Longitude": "lon", 
+                     "Population": "popul", 
+                     "State": "state"
+                } 
+                , inplace=True
+            )
+            
             df["country"] = "Czechia"
             df.to_csv("countries/Czechia.csv", index=False)
         else:
             df = pd.read_csv("countries/" + country + ".csv")
-            df.rename(columns={"City":"city", "Latitude": "lat", "Longitude": "lon", 
-                               "Population": "popul", "State":"state"}, inplace=True)
+            df.rename(
+                columns={
+                     "City":"city", 
+                     "Latitude": "lat", 
+                     "Longitude": "lon", 
+                     "Population": "popul", 
+                     "State":"state"
+                 }
+                 , inplace=True
+            )
+            
             df["country"] = country
             df.to_csv("countries/" + country + ".csv", index=False)
 
@@ -192,7 +210,11 @@ def get_start_lon_lat(input_values):
 
     if start_country == 'USA':
         city_lon_lat_dict = {}
-        df_start = (pd.read_csv("countries/" + start_country + ".csv")[lambda x: x['state'] == str(start_state)])
+        df_start = (
+            pd.read_csv("countries/" + start_country + ".csv")
+            [lambda x: x['state'] == str(start_state)]
+        )
+        
         start_city_loc = df_start[df_start['city'] == str(start_city)].index.values
         start_city_lon = df_start.loc[start_city_loc, 'lon'].iloc[0]
         start_city_lat = df_start.loc[start_city_loc, 'lat'].iloc[0]

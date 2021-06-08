@@ -168,13 +168,13 @@ def get_csv_files(start_country, country_list):
 
 
 """
-Function get_start_lon_lat(input_values) takes in values returned from get_input_countries() - input_values - as an
+Function get_start_location(input_values) takes in values returned from get_input_countries() - input_values - as an
 argument and returns:
 start_city_lon - start city longitude as a float
 start_city_lat - start city latitude as a float
 city_coordinates_dict - dictionary {'city': {'lon': longitude, 'lat': latitude}}
 """
-def get_start_lon_lat(input_values):
+def get_start_location(input_values):
     start_country = input_values[3]
     start_city = input_values[4]
     start_state = input_values[5]
@@ -206,13 +206,13 @@ def get_start_lon_lat(input_values):
 
 
 """
-Function get_lon_lat(input_values, city_coordinate_dict) takes in values returned from get_input_countries() - 
+Function get_destination_locations(input_values, city_coordinate_dict) takes in values returned from get_input_countries() - 
 input_values - and the dictionary {city: {'lon': longitude, 'lat': latitude}} as arguments and returns:
 cities_lon - dictionary {city: longitude,...} for every input city
 cities_lat - dictionary {city: latitude,...} for every input city
 all_cities_coord_dict - dictionary of coordinates of all cities {city: {'lon': longitude, 'lat': latitude},...}
 """
-def get_lon_lat(input_values, city_coordinate_dict):
+def get_destination_locations(input_values, city_coordinate_dict):
     country_city = input_values[1]
     states_dict = input_values[2]
     all_cities_coord_dict = city_coordinate_dict
@@ -430,10 +430,10 @@ if __name__ ==  "__main__":
     ready_web_end = destination_continents_values[2]  # dictionary {country: "continent/country",...} from
                                                       # get_country_continents_as_dict()
     get_csv_files(start_country, country_list)     # prepare csv files for each country
-    start_city_coord = get_start_lon_lat(input_values)  # get start city coordinates
-    city_lon_lat_dict = start_city_coord[2]  # dictionary {start_city: {'lon':longitude, 'lat': latitude}}
-    lon_lat_values = get_lon_lat(input_values, city_lon_lat_dict)
-    all_cities_coordinates_dict = lon_lat_values[2]   # dictionary with coordinates for all cities, including start city
-    lat_lon_list = lon_lat_values[3]  # list of dictionaries with coordinates(lon,lat) of all cities in the input order
+    start_city_location = get_start_location(input_values)  # get start city coordinates
+    city_lon_lat_dict = start_city_location[2]  # dictionary {start_city: {'lon':longitude, 'lat': latitude}}
+    destination_locations = get_destination_locations(input_values, city_lon_lat_dict)
+    all_cities_coordinates_dict = destination_locations[2]   # dictionary with coordinates for all cities, including start city
+    lat_lon_list = destination_locations[3]  # list of dictionaries with coordinates(lon,lat) of all cities in the input order
     get_best_route(all_cities_coordinates_dict, lat_lon_list)  # print optimized route, visualize route on map
     print_travel_bans_link(ready_web_end, name)  # print a list of links to webpages with travel restrictions for each country    

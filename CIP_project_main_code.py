@@ -20,32 +20,6 @@ BING_MAPS_KEY = ''  # your own Bing Maps API key created on https://www.bingmaps
 
 
 """
-Main function: get input countries and cities, calculate and visualize the shortest route to visit all destinations, 
-give links to webpages with Covid-19 travel restrictions.
-"""
-def main():
-    continents = pd.read_csv("countries/countries-continents.csv")     # path to the country-continent csv file
-
-    name = greeting()  # greet and get a user's name
-    input_values = get_input_countries()  # get country and city names from user
-    country_list = input_values[0] # list of countries from get_input_countries()
-    start_country = input_values[3] # string with start country from get_input_countries()
-    destination_continents_values = get_country_continents_as_dict(country_list, continents)  # values returned from
-                                                                                              # get_country_continents_as_dict()
-    ready_web_end = destination_continents_values[2]  # dictionary {country: "continent/country",...} from
-                                                      # get_country_continents_as_dict()
-    get_csv_files(start_country, country_list)     # prepare csv files for each country
-    start_city_coord = get_start_lon_lat(input_values)  # get start city coordinates
-    city_lon_lat_dict = start_city_coord[2]  # dictionary {start_city: {'lon':longitude, 'lat': latitude}}
-    lon_lat_values = get_lon_lat(input_values, city_lon_lat_dict)
-    all_cities_coordinates_dict = lon_lat_values[2]   # dictionary with coordinates for all cities, including start city
-    lat_lon_list = lon_lat_values[3]  # list of dictionaries with coordinates(lon,lat) of all cities in the input order
-    get_best_route(all_cities_coordinates_dict, lat_lon_list)  # print optimized route, visualize route on map
-    print_travel_bans_link(ready_web_end, name)  # print a list of links to webpages with travel restrictions for each country
-
-
-
-"""
 Function to greet the user, returns user's name
 """
 def greeting():
@@ -440,5 +414,26 @@ def print_travel_bans_link(ready_web_end, name):
     print (f"Have a nice trip, {name}!")
 
 
+"""
+Main function: get input countries and cities, calculate and visualize the shortest route to visit all destinations, 
+give links to webpages with Covid-19 travel restrictions.
+"""
 if __name__ ==  "__main__":
-    main()
+    continents = pd.read_csv("countries/countries-continents.csv")     # path to the country-continent csv file
+
+    name = greeting()  # greet and get a user's name
+    input_values = get_input_countries()  # get country and city names from user
+    country_list = input_values[0] # list of countries from get_input_countries()
+    start_country = input_values[3] # string with start country from get_input_countries()
+    destination_continents_values = get_country_continents_as_dict(country_list, continents)  # values returned from
+                                                                                              # get_country_continents_as_dict()
+    ready_web_end = destination_continents_values[2]  # dictionary {country: "continent/country",...} from
+                                                      # get_country_continents_as_dict()
+    get_csv_files(start_country, country_list)     # prepare csv files for each country
+    start_city_coord = get_start_lon_lat(input_values)  # get start city coordinates
+    city_lon_lat_dict = start_city_coord[2]  # dictionary {start_city: {'lon':longitude, 'lat': latitude}}
+    lon_lat_values = get_lon_lat(input_values, city_lon_lat_dict)
+    all_cities_coordinates_dict = lon_lat_values[2]   # dictionary with coordinates for all cities, including start city
+    lat_lon_list = lon_lat_values[3]  # list of dictionaries with coordinates(lon,lat) of all cities in the input order
+    get_best_route(all_cities_coordinates_dict, lat_lon_list)  # print optimized route, visualize route on map
+    print_travel_bans_link(ready_web_end, name)  # print a list of links to webpages with travel restrictions for each country    

@@ -3,14 +3,14 @@ Importing libraries
 """
 import pandas as pd
 import json
-import six
-import sys
-sys.modules['sklearn.externals.six'] = six
 from PIL import Image
 import PIL
 import urllib
 import requests
 import io
+import six
+import sys
+sys.modules['sklearn.externals.six'] = six
 
 
 """

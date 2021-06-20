@@ -14,15 +14,23 @@ sys.modules['sklearn.externals.six'] = six
 
 
 """
-Global values
+Constants
 """
-BING_MAPS_KEY = ''  # your own Bing Maps API key created on https://www.bingmapsportal.com/ , type - string
+# save your own Bing Maps API key created on https://www.bingmapsportal.com/  into this file
+BING_MAPS_KEY_FILE = 'bing_maps_key.txt'
 
 
 """
-Function to greet the user, returns user's name
+Global variables
 """
+g_bing_maps_key = ""
+
+
 def greeting():
+    """
+    Function to greet the user, returns user's name
+    """
+
     print("Hello! Here you can calculate the optimal route (for traveling by car) to visit several destination points around the world.")
     print("Also, you can get the link to the webpage with Covid-19 travel restrictions.")
     name = input("What is your name? ")
@@ -32,16 +40,17 @@ def greeting():
     return name
 
 
-"""
-Function get_input_countries() gets countries and cities from the user, returns: 
-country_list - list with all input countries 
-country_city - dictionary {country: cities} 
-states_dict - if country is USA, dictionary {city: state} 
-start_country = string, the start country 
-start_city = string, the start city 
-start_state = if start_country is USA, string of a start state, else: empty string
-"""
 def get_input_countries():
+    """
+    Function get_input_countries() gets countries and cities from the user, returns:
+    country_list - list with all input countries
+    country_city - dictionary {country: cities}
+    states_dict - if country is USA, dictionary {city: state}
+    start_country = string, the start country
+    start_city = string, the start city
+    start_state = if start_country is USA, string of a start state, else: empty string
+    """
+
     print("Tell us more about your travel plans. What countries and cities would you like to visit? ")
     start_country = input("Starting point(country): ")
     start_city = input("Starting point(city): ")
@@ -82,13 +91,14 @@ def get_input_countries():
     return country_list, country_city, states_dict, start_country, start_city, start_state
 
 
-"""
-Function returns the information to use in the web link for travelbans website. It returns:
-d_continents - dictionary {country: continent} 
-new_country_continent - dictionary {lowercase country: lowercase continent} 
-ready_web_end - dictionary {country: 'lowercase_continent/lowercase_country'} - values are ready for a web link
-"""
 def get_country_continents_as_dict(country_list, continents):
+    """
+    Function returns the information to use in the web link for travelbans website. It returns:
+    d_continents - dictionary {country: continent}
+    new_country_continent - dictionary {lowercase country: lowercase continent}
+    ready_web_end - dictionary {country: 'lowercase_continent/lowercase_country'} - values are ready for a web link
+    """
+
     d_continents = {}
     for d_country in country_list:
         if d_country == 'USA':
@@ -123,12 +133,13 @@ def get_country_continents_as_dict(country_list, continents):
     return d_continents, new_country_continent, ready_web_end
 
 
-"""
-Function gets and transforms(changes names of columns) csv files of every input country. ALso it handles USA and 
-Czech Republic (user can write the name differently) to get right csv files. After running this function we can work 
-with needed csv files without changing something.
-"""
 def get_csv_files(start_country, country_list):
+    """
+    Function gets and transforms(changes names of columns) csv files of every input country. ALso it handles USA and
+    Czech Republic (user can write the name differently) to get right csv files. After running this function we can work
+    with needed csv files without changing something.
+    """
+
     df_start = pd.read_csv("countries/" + start_country + ".csv")
     df_start.rename(columns={"City": "city", "Latitude": "lat", "Longitude": "lon", 
                              "Population": "popul"}, inplace=True)
@@ -167,14 +178,15 @@ def get_csv_files(start_country, country_list):
             df.to_csv("countries/" + country + ".csv", index=False)
 
 
-"""
-Function get_start_location(input_values) takes in values returned from get_input_countries() - input_values - as an
-argument and returns:
-start_city_lon - start city longitude as a float
-start_city_lat - start city latitude as a float
-city_coordinates_dict - dictionary {'city': {'lon': longitude, 'lat': latitude}}
-"""
 def get_start_location(input_values):
+    """
+    Function get_start_location(input_values) takes in values returned from get_input_countries() - input_values - as an
+    argument and returns:
+    start_city_lon - start city longitude as a float
+    start_city_lat - start city latitude as a float
+    city_coordinates_dict - dictionary {'city': {'lon': longitude, 'lat': latitude}}
+    """
+
     start_country = input_values[3]
     start_city = input_values[4]
     start_state = input_values[5]
@@ -205,14 +217,15 @@ def get_start_location(input_values):
     return start_city_lon, start_city_lat, city_coordinates_dict
 
 
-"""
-Function get_destination_locations(input_values, city_coordinate_dict) takes in values returned from get_input_countries() - 
-input_values - and the dictionary {city: {'lon': longitude, 'lat': latitude}} as arguments and returns:
-cities_lon - dictionary {city: longitude,...} for every input city
-cities_lat - dictionary {city: latitude,...} for every input city
-all_cities_coord_dict - dictionary of coordinates of all cities {city: {'lon': longitude, 'lat': latitude},...}
-"""
 def get_destination_locations(input_values, city_coordinate_dict):
+    """
+    Function get_destination_locations(input_values, city_coordinate_dict) takes in values returned from get_input_countries() -
+    input_values - and the dictionary {city: {'lon': longitude, 'lat': latitude}} as arguments and returns:
+    cities_lon - dictionary {city: longitude,...} for every input city
+    cities_lat - dictionary {city: latitude,...} for every input city
+    all_cities_coord_dict - dictionary of coordinates of all cities {city: {'lon': longitude, 'lat': latitude},...}
+    """
+
     country_city = input_values[1]
     states_dict = input_values[2]
     all_cities_coord_dict = city_coordinate_dict
@@ -273,15 +286,25 @@ def get_destination_locations(input_values, city_coordinate_dict):
     return cities_lon, cities_lat, all_cities_coord_dict, lat_lon_list
 
 
-"""
-Function get_url_link(test_routeUrl, imagery_url, all_cities_coord_dict) is used inside the function get_distance().
-It returns strings with API links with the coordinates of all cities. These strings will be used to get an optimized 
-route from Bing Maps and visualize a map with that route.
-test_routeUrl - complete string for getting optimized route
-imagery_url - complete string for getting png map
-wp_city_dict - dictionary {waypoint+number : city,...}, used to print out the route for the user to read
-"""
+def from_file(filename):
+    """
+    read file content to a string (without following empty lines)
+    """
+
+    with open(filename) as f:
+        return f.read().rstrip("\n")
+
+
 def get_url_link(route_url, all_cities_coord_dict, lat_lon_list):
+    """
+    Function get_url_link(test_routeUrl, imagery_url, all_cities_coord_dict) is used inside the function get_distance().
+    It returns strings with API links with the coordinates of all cities. These strings will be used to get an optimized
+    route from Bing Maps and visualize a map with that route.
+    test_routeUrl - complete string for getting optimized route
+    imagery_url - complete string for getting png map
+    wp_city_dict - dictionary {waypoint+number : city,...}, used to print out the route for the user to read
+    """
+
     wp_city_dict = {}
     count = 0
     for i in range(len(lat_lon_list)):
@@ -308,18 +331,20 @@ def get_url_link(route_url, all_cities_coord_dict, lat_lon_list):
     route_url += str(lat_lon_list[0]['lon'])
     route_url += "&optwp=true&optimize=timeWithTraffic"
     route_url += "&key="
-    route_url += BING_MAPS_KEY
+
+    route_url += g_bing_maps_key
 
     return route_url, wp_city_dict
 
 
-"""
-Function get_image_url_link(imagery_url, all_cities_coord_dict, cities_in_route) takes as arguments the beginning of the
-Bing Maps imagery link (imagery_url), dictionary {city: {'lat': latitude, 'lon': longitude},...}, and list of cities 
-in optimized order (cities_in_route). This function returns the url link used to get the map in the png format with the
-optimized route on.
-"""
 def get_image_url_link(imagery_url, all_cities_coord_dict, cities_in_route):
+    """
+    Function get_image_url_link(imagery_url, all_cities_coord_dict, cities_in_route) takes as arguments the beginning of the
+    Bing Maps imagery link (imagery_url), dictionary {city: {'lat': latitude, 'lon': longitude},...}, and list of cities
+    in optimized order (cities_in_route). This function returns the url link used to get the map in the png format with the
+    optimized route on.
+    """
+
     new_lat_lon_list = []
     
     for city in cities_in_route:
@@ -356,16 +381,17 @@ def get_image_url_link(imagery_url, all_cities_coord_dict, cities_in_route):
     imagery_url += str(new_lat_lon_list[0]['lon'])
     imagery_url += ";37"
     imagery_url += "&key="
-    imagery_url += BING_MAPS_KEY
+    imagery_url += g_bing_maps_key
 
     return imagery_url
 
 
-"""
-Function get_best_route(all_cities_coord_dict) takes in the dictionary {city: {'lon':longitude, 'lat':latitude},...} 
-as an argument and returns the optimized route and the map with that route on
-"""
 def get_best_route(all_cities_coord_dict, lat_lon_list):
+    """
+    Function get_best_route(all_cities_coord_dict) takes in the dictionary {city: {'lon':longitude, 'lat':latitude},...}
+    as an argument and returns the optimized route and the map with that route on
+    """
+
     routeUrl_start = "http://dev.virtualearth.net/REST/V1/Routes/Driving?"
     imagery_url = "https://dev.virtualearth.net/REST/v1/Imagery/Map/Road/Routes?"
 
@@ -401,24 +427,28 @@ def get_best_route(all_cities_coord_dict, lat_lon_list):
     image_bytes.close()
 
 
-"""
-Function print_travel_bans_link(ready_web_end) takes in ready_web_end -  a dictionary {country: "continent/country"} -
-as an argument and prints out links for all countries that the user has entered. 
-"""
 def print_travel_bans_link(ready_web_end, name):
+    """
+    Function print_travel_bans_link(ready_web_end) takes in ready_web_end -  a dictionary {country: "continent/country"} -
+    as an argument and prints out links for all countries that the user has entered.
+    """
+
     travel_bans_link = "https://travelbans.org/"
     for country in ready_web_end.keys():
         print ("Check out travel restrictions for", country, "here: ")
         travel_link = travel_bans_link + ready_web_end[country]
         print(travel_link)
-    print (f"Have a nice trip, {name}!")
+    print(f"Have a nice trip, {name}!")
 
 
-"""
-Main function: get input countries and cities, calculate and visualize the shortest route to visit all destinations, 
-give links to webpages with Covid-19 travel restrictions.
-"""
-if __name__ ==  "__main__":
+if __name__ == "__main__":
+    """
+    Main function: get input countries and cities, calculate and visualize the shortest route to visit all destinations, 
+    give links to webpages with Covid-19 travel restrictions.
+    """
+
+    g_bing_maps_key = from_file(BING_MAPS_KEY_FILE)
+
     continents = pd.read_csv("countries/countries-continents.csv")     # path to the country-continent csv file
 
     name = greeting()  # greet and get a user's name
